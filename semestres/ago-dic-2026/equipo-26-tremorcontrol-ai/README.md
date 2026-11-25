@@ -56,9 +56,7 @@ La documentación gráfica definitiva se agregará en `hardware/`.
 
 Archivo principal:
 
-```
-firmware/prueba_estabilizacion_xy.py
-```
+[📄 Ver `prueba_estabilizacion_xy.py`](firmware/prueba_estabilizacion_xy.py)
 
 La prueba implementa:
 
