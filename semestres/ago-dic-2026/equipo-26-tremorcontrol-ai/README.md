@@ -1,4 +1,4 @@
-# TremorControl AI — Cubierto estabilizador Parkinson
+# TremorControl AI — Cubierto estabilizador para Parkinson
 
 ## Integrantes
 
@@ -7,72 +7,96 @@
 
 ## Descripción del proyecto
 
-TremorControl AI es un proyecto desarrollado para la materia de Sistemas Programables, consiste en un cubierto mecatrónico asistivo que busca ayudar a reducir el movimiento involuntario de la mano durante la alimentación
+TremorControl AI es un proyecto desarrollado para la materia de Sistemas Programables. Consiste en un cubierto mecatrónico asistivo que busca reducir el efecto de los movimientos involuntarios de la mano durante la alimentación.
 
-El sistema utilizará una ESP32-WROVER Board A3B0 como controlador principal, un MPU-6050 para detectar aceleración, inclinación y movimiento de la mano, además de dos servomotores SG90 que realizarán una compensación en los ejes X y Y para tratar de mantener la cuchara lo más estable posible
+El sistema utiliza una ESP32-WROVER como controlador principal, un MPU-6050 para detectar inclinación y movimiento, y dos servomotores SG90 para realizar compensaciones mecánicas en los ejes X y Y.
 
-También se integrará un sensor FSR para detectar cuando el usuario está sujetando el cubierto, un HC-SR04 para medir distancia, un motor vibrador háptico para generar una alerta física, comunicación MQTT para monitoreo y control remoto, Firebase para almacenar información y una ESP32-CAM para apoyar posteriormente con la detección visual del rostro y la aproximación hacia la boca
+Además, el proyecto contempla la integración posterior de sensores auxiliares, comunicación con servicios web, almacenamiento de datos y apoyo visual mediante cámara.
 
 ## Objetivo general
 
-Diseñar e implementar un prototipo de cubierto asistivo utilizando una ESP32-WROVER Board A3B0 programada con MicroPython, capaz de detectar movimientos de la mano y generar una compensación mecánica mediante dos servomotores, además de integrar sensores adicionales, comunicación MQTT y almacenamiento de información
+Diseñar e implementar un prototipo de cubierto asistivo capaz de detectar movimientos de la mano y compensarlos mecánicamente mediante servomotores, con el propósito de mantener la cuchara lo más estable posible durante la alimentación.
 
 ## Hardware principal
 
 | Componente | Función |
 |---|---|
-| ESP32-WROVER Board A3B0 | Controlador principal del sistema |
-| MPU-6050 | Detecta aceleración, inclinación y movimiento |
-| HC-SR04 | Mide la distancia aproximada hacia el usuario |
-| FSR | Detecta la presión de agarre sobre el mango |
-| Servo SG90 Eje X | Compensación del movimiento horizontal |
-| Servo SG90 Eje Y | Compensación del movimiento vertical |
-| Motor vibrador háptico | Retroalimentación mediante vibración |
-| ESP32-CAM | Apoyo para detección visual de rostro y boca |
+| ESP32-WROVER | Controlador principal |
+| MPU-6050 | Detecta aceleración e inclinación |
+| Servo SG90 Eje X | Compensación lateral |
+| Servo SG90 Eje Y | Compensación vertical |
+| HC-SR04 | Medición de distancia |
+| Motor vibrador háptico | Retroalimentación física |
+| ESP32-CAM | Apoyo para detección visual |
 
-## Tabla HAL inicial
+## Tabla HAL actual
 
 | Dispositivo | Señal | Pin ESP32 | Tipo |
-|---|---|---|---|
-| MPU-6050 | SDA | GPIO21 | I2C |
-| MPU-6050 | SCL | GPIO22 | I2C |
-| HC-SR04 | TRIG | GPIO27 | Salida digital |
-| HC-SR04 | ECHO | GPIO26 | Entrada digital |
-| FSR | Salida | GPIO34 | ADC |
-| Servo SG90 Eje X | Señal | GPIO25 | PWM |
-| Servo SG90 Eje Y | Señal | GPIO33 | PWM |
-| Motor háptico | Control | GPIO32 | Salida / PWM |
+|---|---|---:|---|
+| MPU-6050 | SDA | GPIO32 | I2C |
+| MPU-6050 | SCL | GPIO33 | I2C |
+| Servo SG90 Eje X | Señal | GPIO13 | PWM |
+| Servo SG90 Eje Y | Señal | GPIO14 | PWM |
 
-La asignación de pines es inicial y podrá modificarse durante las pruebas físicas del proyecto
+Los demás sensores se integrarán en siguientes etapas del proyecto.
 
-## Funcionamiento propuesto
+## Funcionamiento actual
 
-Cuando el usuario sujete el cubierto, el sensor FSR detectará la presión de agarre, posteriormente el MPU-6050 realizará lecturas de movimiento e inclinación en tiempo real
+El MPU-6050 realiza lecturas de aceleración e inclinación en tiempo real.
 
-Los datos obtenidos serán procesados por la ESP32 y utilizados para calcular una compensación en los dos servomotores, de manera que los motores se muevan en sentido contrario al movimiento detectado
+Durante el arranque, el sistema calcula una posición base mediante varias muestras del MPU-6050. Posteriormente se aplican filtros y una zona muerta para reducir movimientos no deseados.
 
-El HC-SR04 servirá como referencia para conocer la distancia aproximada del cubierto hacia el usuario y el motor háptico podrá generar una pequeña vibración como forma de aviso
+De acuerdo con el montaje físico actual:
 
-En etapas posteriores se integrará comunicación MQTT para enviar información y modificar parámetros desde un teléfono, además de Firebase para guardar registros del funcionamiento del sistema
+- PITCH se interpreta como movimiento del eje X.
+- ROLL se interpreta como movimiento del eje Y.
+- El eje Y realiza compensación en sentido contrario al movimiento detectado.
+- Si la cuchara se levanta, el servo Y corrige hacia abajo.
+- Si la cuchara baja, el servo Y corrige hacia arriba.
+
+## Configuración actual de respuesta
+
+- PASO_MAXIMO = 8.0
+- TIEMPO_CICLO = 10 ms
+- ZONA_MUERTA = 2.0
+- ALPHA = 0.15
 
 ## Estado actual
 
-Actualmente el proyecto se encuentra en su etapa inicial de desarrollo
+- Repositorio configurado.
+- Estructura del proyecto creada.
+- MPU-6050 detectado y probado.
+- Lectura de acelerómetro y giroscopio funcional.
+- Cálculo de roll y pitch implementado.
+- Calibración inicial automática implementada.
+- Filtro de lectura implementado.
+- Zona muerta implementada.
+- Separación de los movimientos X y Y implementada.
+- Servo Y funcional.
+- Compensación vertical funcionando.
+- Velocidad de respuesta ajustada.
+- Servo X actualmente en calibración mecánica.
 
-- Definición del proyecto completada
-- Selección inicial de componentes completada
-- Repositorio GitHub configurado
-- Tabla HAL inicial definida
-- Preparación de las primeras pruebas de sensores y actuadores
+## Firmware
+
+El firmware probado actualmente se encuentra en:
+
+`firmware/estabilizacion_eje_y.py`
+
+En esta versión el servo X se mantiene desactivado para evitar movimientos incorrectos mientras se termina de ajustar su centro mecánico.
+
+## Sprints
+
+La documentación de avances se encuentra en:
+
+- `docs/SPRINT_01.md`
+- `docs/SPRINT_02.md`
 
 ## Próximos pasos
 
-- Probar individualmente el MPU-6050
-- Probar los dos servomotores SG90
-- Calibrar la posición neutral del sistema
-- Realizar la primera compensación de movimiento en dos ejes
-- Integrar el sensor FSR
-- Integrar el HC-SR04
-- Integrar el motor háptico
-- Implementar comunicación MQTT
-- Realizar el montaje físico del prototipo
+- Calibrar mecánicamente el servo X.
+- Activar la compensación del eje X.
+- Probar estabilización simultánea en ambos ejes.
+- Documentar el montaje físico definitivo.
+- Integrar sensores adicionales.
+- Continuar con servicios web, almacenamiento de datos e interfaz.
